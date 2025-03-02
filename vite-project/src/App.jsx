@@ -10,19 +10,18 @@ import Footer from './components/Footer';
 
 function App() {
   const [count, setCount] = useState(0);
-
   return (
-    <BrowserRouter>
-      <div className="bg-gray-500 flex flex-col min-h-screen"> {}
-        <Header /> {}
+      <div className="bg-gray-500 flex flex-col min-h-screen">
+        <Header />
+        <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
-          <Route path="/blog" element={<Blog />} /> {}
+          <Route path="/blog" element={<Blog />} /> 
         </Routes>
-        <Footer /> {}
+        </BrowserRouter>
+        <Footer />
       </div>
-    </BrowserRouter>
   );
 }
 export default App;
