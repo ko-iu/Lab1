@@ -8,6 +8,7 @@ import Blog from './pages/Blog';
 import Header from './components/Header';
 import Footer from './components/Footer';
 
+
 function AppLayout({ children }) {
   return (
     <div className="bg-gray-500 flex flex-col min-h-screen">
