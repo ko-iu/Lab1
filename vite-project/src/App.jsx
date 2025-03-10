@@ -8,20 +8,10 @@ import Blog from './pages/Blog';
 import Header from './components/Header';
 import Footer from './components/Footer';
 
-
-function AppLayout({ children }) {
-  return (
-    <div className="bg-gray-500 flex flex-col min-h-screen">
-      {children}
-    </div>
-  );
-}
-
 function App() {
   const [count, setCount] = useState(0);
   return (
     <BrowserRouter>
-      <AppLayout>
         <Header />
         <Routes>
           <Route path="/" element={<Home />} />
@@ -29,7 +19,6 @@ function App() {
           <Route path="/blog" element={<Blog />} />
         </Routes>
         <Footer />
-      </AppLayout>
     </BrowserRouter>
   );
 }
