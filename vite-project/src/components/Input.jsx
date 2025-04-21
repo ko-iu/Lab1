@@ -1,9 +1,10 @@
 import React from "react";
 
-const Input = ({ type = "text", placeholder, onChange, value, className }) => { 
+const Input = ({ type = "text", name, placeholder, onChange, value, className }) => { 
   return (
     <input
       type={type}
+      name={name}
       placeholder={placeholder}
       onChange={onChange}
       value={value}
