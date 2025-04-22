@@ -1,33 +1,80 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios, { AxiosResponse } from 'axios';
 import Button from '../components/Button';
 import Text from '../components/Text';
 import Input from '../components/Input';
 import { Container } from '../components/Container';
 import ItemCard from '../components/ItemCard';
 
+interface Product {
+  id: number;
+  title: string;
+  description: string;
+  price: string;
+}
+
 const Home = () => {
-  const [inputValue, setInputValue] = useState('');
-  const [items, setItems] = useState([
-    { title: "Товар 1", description: "Качественный товар", price: "5000" }
-  ]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newItem, setNewItem] = useState({
+  const [inputValue, setInputValue] = useState<string>('');
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [newProduct, setNewProduct] = useState<Omit<Product, 'id'>>({
     title: "",
     description: "",
     price: ""
   });
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleAddItem = () => {
-    if (newItem.title && newItem.description && newItem.price) {
-      setItems([...items, newItem]);
-      setNewItem({ title: "", description: "", price: "" });
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get<Product[]>('http://localhost:5000/api/products');
+        setProducts(response.data);
+      } catch (error) {
+        console.error('Ошибка загрузки товаров:', error);
+        setError('Не удалось загрузить товары');
+      }
+    };
+    fetchProducts();
+  }, []);
+
+  const handleAddProduct = async () => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      if (!newProduct.title.trim() || !newProduct.description.trim() || !newProduct.price.trim()) {
+        throw new Error("Все поля обязательны для заполнения");
+      }
+
+      console.log('Отправляемые данные:', newProduct); // Логирование перед отправкой
+
+      const response = await axios.post<Product>(
+        'http://localhost:5000/api/products',
+        newProduct,
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      console.log('Ответ сервера:', response.data); // Логирование ответа
+
+      setProducts(prevProducts => [...prevProducts, response.data]);
+      setNewProduct({ title: "", description: "", price: "" });
       setIsModalOpen(false);
+    } catch (error: any) {
+      console.error('Ошибка добавления товара:', error);
+      setError(error.response?.data?.error || error.message || "Ошибка при добавлении товара");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setNewItem(prev => ({ ...prev, [name]: value }));
+    setNewProduct(prev => ({ ...prev, [name]: value }));
   };
 
   return (
@@ -64,12 +111,12 @@ const Home = () => {
         <div className="mt-8">
           <Text className="text-2xl font-bold mb-4 text-center">Наши товары</Text>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {items.map((item, index) => (
+            {products.map((product) => (
               <ItemCard 
-                key={index}
-                title={item.title}
-                description={item.description}
-                price={item.price}
+                key={product.id}
+                title={product.title}
+                description={product.description}
+                price={product.price}
               />
             ))}
           </div>
@@ -85,7 +132,7 @@ const Home = () => {
                 name="title"
                 placeholder="Название"
                 className="border border-gray-300 bg-gray-100 text-gray-900 px-4 py-2 rounded-lg w-full mb-4 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                value={newItem.title}
+                value={newProduct.title}
                 onChange={handleInputChange}
               />
               
@@ -94,7 +141,7 @@ const Home = () => {
                 name="description"
                 placeholder="Описание"
                 className="border border-gray-300 bg-gray-100 text-gray-900 px-4 py-2 rounded-lg w-full mb-4 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                value={newItem.description}
+                value={newProduct.description}
                 onChange={handleInputChange}
               />
               
@@ -103,7 +150,7 @@ const Home = () => {
                 name="price"
                 placeholder="Цена"
                 className="border border-gray-300 bg-gray-100 text-gray-900 px-4 py-2 rounded-lg w-full mb-4 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                value={newItem.price}
+                value={newProduct.price}
                 onChange={handleInputChange}
               />
               
@@ -116,7 +163,7 @@ const Home = () => {
                 <Button
                   title="Добавить"
                   className="bg-purple-500 hover:bg-purple-700 text-white px-4 py-2 rounded-lg"
-                  onClick={handleAddItem}
+                  onClick={handleAddProduct}
                 />
               </div>
             </div>
