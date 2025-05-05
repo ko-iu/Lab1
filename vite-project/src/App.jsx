@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { HelmetProvider } from 'react-helmet-async';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './App.css';
 import './index.css';
@@ -11,6 +12,7 @@ import Footer from './components/Footer';
 function App() {
   const [count, setCount] = useState(0);
   return (
+    <HelmetProvider>
     <BrowserRouter>
         <Header />
         <Routes>
@@ -20,6 +22,7 @@ function App() {
         </Routes>
         <Footer />
     </BrowserRouter>
+    </HelmetProvider>
   );
 }
 

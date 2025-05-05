@@ -3,6 +3,10 @@ import cors from "cors";
 
 const app = express();
 const port = 5000;
+ 
+let products = [
+  { id: 1, title: "Товар 1", description: "Описание товара 1", price: "100" }
+];
 
 app.use(cors());
 app.use(express.json());

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import axios, { AxiosResponse } from 'axios';
 import Button from '../components/Button';
 import Text from '../components/Text';
@@ -78,6 +79,12 @@ const Home = () => {
   };
 
   return (
+    <>
+    <Helmet>
+      <title>Главная страница | Мой Сайт</title>
+      <meta name="description" content="Добро пожаловать на главную страницу." />
+      <meta name="keywords" content="главная, товары, магазин, приветствие" />
+    </Helmet>
     <main className="flex items-center justify-center min-h-screen"> 
       <Container>
         <Text className="text-4xl font-bold mb-8 text-center">Добро пожаловать!</Text>
@@ -171,6 +178,7 @@ const Home = () => {
         )}
       </Container>
     </main>
+    </>
   );
 };
 
