@@ -6,6 +6,7 @@ import Text from '../components/Text';
 import Input from '../components/Input';
 import { Container } from '../components/Container';
 import ItemCard from '../components/ItemCard';
+import { useAuth } from '../components/AuthContext';
 
 interface Product {
   id: number;
@@ -25,6 +26,7 @@ const Home = () => {
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -39,7 +41,7 @@ const Home = () => {
     fetchProducts();
   }, []);
 
-  const handleAddProduct = async () => {
+   const handleAddProduct = async () => {
     setIsLoading(true);
     setError(null);
     
@@ -48,19 +50,16 @@ const Home = () => {
         throw new Error("Все поля обязательны для заполнения");
       }
 
-      console.log('Отправляемые данные:', newProduct); // Логирование перед отправкой
-
       const response = await axios.post<Product>(
         'http://localhost:5000/api/products',
         newProduct,
         {
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer mock-token'
           }
         }
       );
-
-      console.log('Ответ сервера:', response.data); // Логирование ответа
 
       setProducts(prevProducts => [...prevProducts, response.data]);
       setNewProduct({ title: "", description: "", price: "" });
@@ -72,6 +71,7 @@ const Home = () => {
       setIsLoading(false);
     }
   };
+
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -87,8 +87,12 @@ const Home = () => {
     </Helmet>
     <main className="flex items-center justify-center min-h-screen"> 
       <Container>
-        <Text className="text-4xl font-bold mb-8 text-center">Добро пожаловать!</Text>
-        
+       {user && (
+            <Text className="text-xl font-bold mb-4 text-center text-purple-400">
+              Добро пожаловать, {user.firstName} {user.lastName}!
+              {user.role === 'admin' && ' (Администратор)'}
+            </Text>
+          )}
         <div className="flex items-center justify-center mb-8">
           <Input
             type="text"
